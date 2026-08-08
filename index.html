@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vídeo + Tradução automática em Libras (VLibras)</title>
+
+<!-- Vimeo Player SDK (oficial) -->
+<script src="https://player.vimeo.com/api/player.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1>🤟 Vídeo com tradução automática para Libras</h1>
+  <p class="sub">Cole a URL do vídeo (Vimeo) → o player carrega → as legendas são traduzidas automaticamente pelo VLibras</p>
+
+  <div class="grid">
+    <!-- CAMPO DE URL -->
+    <div class="card">
+      <div class="row">
+        <input id="urlInput" class="url-input" type="text"
+          placeholder="Cole aqui a URL do vídeo (ex: https://vimeo.com/1215329728/054856d6af)"
+          value="https://vimeo.com/1215329728/054856d6af?share=copy">
+        <button class="btn" id="carregarBtn">▶ Carregar vídeo</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <span class="pill" id="fonteInfo">Fonte: —</span>
+        <span class="pill" id="idInfo">ID: —</span>
+        <span class="pill" id="hashInfo">Hash: —</span>
+      </div>
+    </div>
+
+    <!-- PLAYER -->
+    <div class="card">
+      <div class="video-frame" id="videoFrame">
+        <!-- O iframe é criado/recriado dinamicamente pelo JS -->
+      </div>
+      <div class="row" style="margin-top:12px">
+        <span class="badge"><span id="dot" class="status-dot"></span> <span id="statusTxt">Aguardando vídeo…</span></span>
+        <span class="badge" id="legStatus">Legenda: —</span>
+        <span class="badge"><span id="vlibrasDot" class="status-dot"></span> <span id="vlibrasTxt">VLibras: carregando…</span></span>
+        <span class="badge" id="filaStatus">Fila: 0</span>
+      </div>
+    </div>
+
+    <!-- CONTROLES + LEGENDA -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <label class="switch">
+          <input type="checkbox" id="autoSend" checked>
+          Traduzir automaticamente a cada legenda
+        </label>
+        <button class="btn" id="manualBtn">↻ Reenviar legenda atual</button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <label class="switch">
+          Modo de envio: <b style="color:var(--ok)">aguarda o avatar terminar</b> ·
+          espera máxima:
+          <input type="range" id="intervalo" min="2000" max="8000" step="250" value="4000">
+          <b id="intervaloVal" style="color:var(--ink)">4s</b>
+        </label>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <label class="switch">
+          Velocidade do avatar (VLibras):
+          <select id="velocidade" style="padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:#0b111d;color:var(--ink);font-size:14px">
+            <option value="1x">1x (normal)</option>
+            <option value="1.5x">1.5x (rápido)</option>
+            <option value="2x">2x (muito rápido)</option>
+            <option value="2.5x" selected>2.5x (máximo)</option>
+            <option value="0.5x">0.5x (lento)</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="legenda-atual" id="legendaAtual"><span class="note">A legenda atual aparecerá aqui…</span></div>
+
+      <p class="note" style="margin-top:12px">
+        💡 Clique no boneco do VLibras (canto direito) para abrir o painel e carregar o avatar.
+        Depois dê play — cada legenda é traduzida automaticamente via <code>Player.translate()</code>.
+      </p>
+    </div>
+
+    <!-- LOG (diagnóstico) -->
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <b style="font-size:14px">Diagnóstico</b>
+        <button class="btn ghost" id="clearLog">Limpar</button>
+      </div>
+      <div class="log" id="log"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VLibras Widget (oficial) ===== -->
+<div vw class="enabled">
+  <div vw-access-button class="active"></div>
+  <div vw-plugin-wrapper>
+    <div class="vw-plugin-top-wrapper"></div>
+  </div>
+</div>
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
+<script src="js/app.js"></script>
+</body>
+</html>

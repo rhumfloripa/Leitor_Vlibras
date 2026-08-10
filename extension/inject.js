@@ -120,65 +120,46 @@
     if (w) w.postMessage(Object.assign({ __leitorVlibras: true }, msg), '*');
   }
 
-  /* ---------- 3) FILA SINCRONIZADA (espera gloss:end) ----------
-     Em vez de "empurrar" o cue ativo a cada tick, seguimos os cues
-     em ORDEM: enviamos um, marcamos traduzindo=true, e só liberamos
-     o próximo quando o frame avisar 'gloss:end' (ou por timeout de
-     segurança). Isso evita atropelar o avatar. */
+  /* ---------- 3) SINCRONIZAÇÃO — prioriza o PRESENTE ----------
+     Quando o avatar termina (gloss:end), enviamos a legenda que
+     corresponde ao tempo ATUAL do vídeo — pulando as atrasadas.
+     Assim o avatar nunca acumula atraso infinito: ele sempre
+     "alcança" o ponto atual do vídeo. */
   function getVideo() { return document.querySelector('video.html5-main-video') || document.querySelector('video'); }
 
-  // índice do cue que corresponde ao tempo atual do vídeo
-  function indiceCueNoTempo(ms) {
-    let idx = -1;
-    for (let i = 0; i < STATE.cues.length; i++) {
-      if (ms >= STATE.cues[i].startMs) idx = i; else break;
-    }
-    return idx;
-  }
-
-  function enviarProximo() {
-    if (!STATE.ativo || STATE.traduzindo || !STATE.framePronto || !STATE.cues.length) return;
+  function cueNoTempoAtual() {
     const v = getVideo();
-    if (!v) return;
+    if (!v || !STATE.cues.length) return null;
     const ms = v.currentTime * 1000;
-    const idxAtual = indiceCueNoTempo(ms);
-    // só envia se há um cue novo (à frente do último enviado) já "ativo" no tempo
-    if (idxAtual > STATE.ultimoIndiceEnviado) {
-      const proximo = STATE.ultimoIndiceEnviado + 1;
-      const cue = STATE.cues[proximo];
-      if (!cue) return;
-      STATE.ultimoIndiceEnviado = proximo;
-      STATE.traduzindo = true;
-      _envioEmMs = performance.now();
-      postFrame({ tipo: 'legenda', texto: cue.text });
-      console.log('%c[VLibras] ENVIADO ' + ts() + ' | cue[' + proximo + '] | vídeo=' + (ms/1000).toFixed(1) + 's | dur.legenda=' + ((cue.endMs-cue.startMs)/1000).toFixed(1) + 's', 'color:#3d7bf0;font-weight:bold');
-      console.log('   frase enviada: "' + cue.text + '"');
-      // segurança: se gloss:end não vier em 8s, libera
-      clearTimeout(STATE.timerSeguranca);
-      STATE.timerSeguranca = setTimeout(function () {
-        if (STATE.traduzindo) { log('⏱ timeout gloss:end — liberando'); STATE.traduzindo = false; }
-      }, 8000);
+    let achado = null;
+    for (const c of STATE.cues) {
+      if (ms >= c.startMs && ms < c.endMs) { achado = c; break; }
+      if (c.startMs <= ms) achado = c; // último que já começou (fallback)
+      else break;
     }
+    return achado;
   }
 
-  // se o usuário pular no vídeo (seek), re-sincroniza o índice
-  function ressincronizarSeSeek() {
+  function tentarEnviar() {
+    if (!STATE.ativo || STATE.traduzindo || !STATE.framePronto) return;
+    const cue = cueNoTempoAtual();
+    if (!cue) return;
+    if (cue.text === STATE.ultimoEnviado) return;   // já traduziu esse
+    STATE.ultimoEnviado = cue.text;
+    STATE.traduzindo = true;
+    _envioEmMs = performance.now();
+    postFrame({ tipo: 'legenda', texto: cue.text });
     const v = getVideo();
-    if (!v || !STATE.cues.length) return;
-    const ms = v.currentTime * 1000;
-    const idxAtual = indiceCueNoTempo(ms);
-    // se voltou atrás ou pulou muito à frente, realinha
-    if (idxAtual < STATE.ultimoIndiceEnviado - 1 || idxAtual > STATE.ultimoIndiceEnviado + 3) {
-      STATE.ultimoIndiceEnviado = idxAtual - 1;
-      STATE.traduzindo = false;
-      log('seek detectado — re-sincronizado para índice', idxAtual);
-    }
+    console.log('%c[VLibras] ENVIADO ' + ts() + ' | vídeo=' + (v ? v.currentTime.toFixed(1) : '?') + 's | dur.legenda=' + ((cue.endMs-cue.startMs)/1000).toFixed(1) + 's', 'color:#3d7bf0;font-weight:bold');
+    console.log('   frase: "' + cue.text + '"');
+    // segurança: libera se gloss:end não vier em 8s
+    clearTimeout(STATE.timerSeguranca);
+    STATE.timerSeguranca = setTimeout(function () {
+      if (STATE.traduzindo) { console.log('%c[VLibras] ⏱ timeout — liberando', 'color:#e2a03f'); STATE.traduzindo = false; }
+    }, 8000);
   }
 
-  function tick() {
-    ressincronizarSeSeek();
-    enviarProximo();
-  }
+  function tick() { tentarEnviar(); }
 
   /* ---------- 4) init ---------- */
   function init() {
@@ -200,11 +181,13 @@
         STATE.framePronto = true;
         log('frame VLibras pronto');
       } else if (d.tipo === 'gloss:end') {
-        // avatar terminou → libera o próximo
+        // avatar terminou → libera e já tenta enviar a legenda do tempo ATUAL
         clearTimeout(STATE.timerSeguranca);
         const durTraducao = _envioEmMs ? ((performance.now() - _envioEmMs) / 1000).toFixed(1) : '?';
-        console.log('%c[VLibras] TERMINOU ' + ts() + ' | avatar levou ' + durTraducao + 's para traduzir', 'color:#27ae60;font-weight:bold');
+        console.log('%c[VLibras] TERMINOU ' + ts() + ' | avatar levou ' + durTraducao + 's', 'color:#27ae60;font-weight:bold');
         STATE.traduzindo = false;
+        // pequeno atraso para o gloss:end 0.0s espúrio não disparar em cascata
+        setTimeout(tentarEnviar, 150);
       }
       return;
     }

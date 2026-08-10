@@ -49,7 +49,9 @@
   const debug = new URLSearchParams(location.search).get('debug') === '1';
   const diagEl = document.getElementById('diag');
   if (debug) diagEl.style.display = 'block';
+  function ts() { const d = new Date(); return d.toLocaleTimeString('pt-BR') + '.' + String(d.getMilliseconds()).padStart(3,'0'); }
   function log(m) { if (debug) { diagEl.textContent += m + '\n'; } console.log('[VLibras/frame]', m); }
+  let _recebidoEmMs = 0;
 
   let config = { velocidade: '2.5x', intervaloMax: 4000, ativo: true };
 
@@ -89,12 +91,14 @@
   function processar() {
     if (enviando || !pendente) return;
     const t = pendente; pendente = null; enviando = true;
-    if (traduzir(t)) { ultimo = t; log('traduzindo: ' + t.slice(0, 40)); }
+    if (traduzir(t)) { ultimo = t; console.log('%c[VLibras/frame] TRADUZINDO ' + ts() + ' | enviado ao avatar', 'color:#7fb1f0'); }
     clearTimeout(timer);
     timer = setTimeout(function () { enviando = false; processar(); }, config.intervaloMax);
   }
   function liberar() {
     clearTimeout(timer); enviando = false;
+    const dur = _recebidoEmMs ? ((performance.now() - _recebidoEmMs) / 1000).toFixed(1) : '?';
+    console.log('%c[VLibras/frame] GLOSS:END ' + ts() + ' | avatar sinalizou por ' + dur + 's', 'color:#27ae60;font-weight:bold');
     // avisa o PAI (inject) que o avatar terminou → libera a próxima legenda
     try { parent.postMessage({ __leitorVlibras: true, tipo: 'gloss:end' }, '*'); } catch (e) {}
     processar();
@@ -140,7 +144,11 @@
     const d = ev.data;
     if (!d || d.__leitorVlibras !== true) return;
     if (d.tipo === 'legenda') {
-      if (config.ativo && d.texto && d.texto !== ultimo) { pendente = d.texto; processar(); }
+      if (config.ativo && d.texto && d.texto !== ultimo) {
+        _recebidoEmMs = performance.now();
+        console.log('%c[VLibras/frame] RECEBIDO ' + ts() + ' | "' + d.texto + '"', 'color:#e2a03f;font-weight:bold');
+        pendente = d.texto; processar();
+      }
     } else if (d.tipo === 'config') {
       config = Object.assign(config, d.config || {});
       if (d.config && d.config.velocidade) aplicarVelocidade(d.config.velocidade);

@@ -14,6 +14,13 @@
   const LOG = '[Leitor VLibras/inject]';
   function log() { try { console.log.apply(console, [LOG].concat([].slice.call(arguments))); } catch (e) {} }
 
+  function ts() {
+    const d = new Date();
+    return d.toLocaleTimeString('pt-BR') + '.' + String(d.getMilliseconds()).padStart(3, '0');
+  }
+  // marca de quando cada legenda foi enviada, para medir a duração até o gloss:end
+  let _envioEmMs = 0;
+
   const FRAME_URL = 'https://rhumfloripa.github.io/Leitor_Vlibras/vlibras-frame.html';
 
   const STATE = {
@@ -142,8 +149,10 @@
       if (!cue) return;
       STATE.ultimoIndiceEnviado = proximo;
       STATE.traduzindo = true;
+      _envioEmMs = performance.now();
       postFrame({ tipo: 'legenda', texto: cue.text });
-      log('→ enviado [' + proximo + ']:', cue.text.slice(0, 40));
+      console.log('%c[VLibras] ENVIADO ' + ts() + ' | cue[' + proximo + '] | vídeo=' + (ms/1000).toFixed(1) + 's | dur.legenda=' + ((cue.endMs-cue.startMs)/1000).toFixed(1) + 's', 'color:#3d7bf0;font-weight:bold');
+      console.log('   frase enviada: "' + cue.text + '"');
       // segurança: se gloss:end não vier em 8s, libera
       clearTimeout(STATE.timerSeguranca);
       STATE.timerSeguranca = setTimeout(function () {
@@ -193,6 +202,8 @@
       } else if (d.tipo === 'gloss:end') {
         // avatar terminou → libera o próximo
         clearTimeout(STATE.timerSeguranca);
+        const durTraducao = _envioEmMs ? ((performance.now() - _envioEmMs) / 1000).toFixed(1) : '?';
+        console.log('%c[VLibras] TERMINOU ' + ts() + ' | avatar levou ' + durTraducao + 's para traduzir', 'color:#27ae60;font-weight:bold');
         STATE.traduzindo = false;
       }
       return;

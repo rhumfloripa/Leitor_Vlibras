@@ -1,0 +1,172 @@
+00:00 Olá, como é bom ter você aqui comigo, eu sou
+00:03 o professor Bruno Cimirro, e nesse vídeo de hoje iremos
+00:07 entender qual a importância das tags para o trabalho diário
+00:10 dos técnicos, tendo em vista a identificação de instrumentos em
+00:15 ambiente industriais. Na aula de hoje, vamos aprender a importância
+00:19 e a função de uma tag e ainda irei apresentar
+00:22 a norma ISO 5.1 de 2009, que é de extrema
+00:25 importância para a identificação dos símbolos utilizados na experimentação. Então
+00:30 se prepara aí
+00:31 que nós já vamos começar!
+00:38 A identificação de instrumentos. Para identificar uma pessoa conhecida em
+00:42 um local com muitas pessoas, a maneira mais eficiente é
+00:46 chamá-la pelo seu próprio nome nas empresas de processo contínuo,
+00:50 também é assim. Quando os técnicos querem relatar algum evento
+00:54 ocorrido no processo, eles precisam identificar em qual equipamento ou
+00:59 instrumento está ocorrendo o fato mencionado. Por isso, todos os
+01:03 equipamentos e instrumentos de uma instalação industrial recebem uma identificação.
+01:08 Que indica a sua função no processo.
+01:11 Os técnicos chamam essa identificação de tag. Vamos aprender como
+01:15 é criada a tag de um instrumento e saber se
+01:18 existe um procedimento a ser seguido na sua elaboração, pois
+01:22 ela é muito importante para os processos industriais.
+01:26 As funções da tag.
+01:28 Como já sabemos, a tag tem a finalidade de identificar
+01:32 os equipamentos e instrumentos dentro de uma instalação industrial. Ela
+01:36 faz referência ao local de instalação do instrumento na malha.
+01:41 Imagina a quantidade de instrumentos, máquinas e equipamentos em uma
+01:45 indústria. Imagine se não houvessem as tags. Seria impossivel saber
+01:50 onde está instalado cada instrumento em uma planta industrial, como
+01:55 apresentamos na imagem, a tag é única, pois identifica aquele
+01:59 ponto onde um determinado instrumento exercerá a sua função no
+02:03 sistema de medição ou do controle do processo. Pelo fato
+02:07 de a tag ser criada na fase de projeto, ela
+02:10 é definida antes mesmo de o instrumento ser comprado ou
+02:13 instalado no sistema de medição
+02:16 e controle.
+02:17 A tag é composta por uma combinação de letras e
+02:20 números que especificam a função, a localização e a sequência
+02:25 numérica que possibilitam rastrear toda a história do instrumento dentro
+02:30 da instalação industrial. A tag refere-se ao instrumento que deve
+02:34 controlar e indicar a temperatura na malha 123, mas é
+02:38 possível utilizar qualquer letra na construção da tag? Qual é
+02:42 o procedimento que define a disposição das letras e números
+02:46 na elaboração da tag?
+02:48 Para responder a essas perguntas, precisamos conhecer a norma ISA,
+02:52 que é a sociedade Internacional de automação. Essa instituição define
+02:56 por meio das normas ISA, as referências para a elaboração
+03:00 de projetos de automação e instrumentação de processos industriais.
+03:07 A norma Isa 5.1, de 2009, específica os símbolos gráficos
+03:11 e um sistema de código alfanumérico usados para a identificação,
+03:16 representação e localização dos instrumentos na elaboração dos diagramas esquemáticos
+03:22 dos sistemas de medição e controle dos processos, são utilizadas
+03:26 letras e suas disposições na elaboração das tag, dos instrumentos
+03:31 e dispositivos que compõem os sistemas de medição e controle
+03:36 dos processos.
+03:37 A tabela a seguir mostra o significado de cada letra
+03:41 empregada na composição de uma tag.
+03:44 Tag alfanumérico de instrumento.
+03:47 Na elaboração das tags dos instrumentos é empregado um código
+03:51 alfanumérico, composto por 2 partes, a primeira usa um grupo
+03:55 de letras denominada de identificação funcional, e a segunda é
+03:59 feita por um grupo numérico denominada de identificação da malha.
+04:03 Vamos conhecer algumas
+características desses
+04:06 elementos, iniciando
+pela identificação funcional.
+04:10 Essa identificação estabelece a função que o instrumento executa no
+04:14 sistema de medição e controle por meio de 2 grupos
+04:18 de letras.
+04:19 O primeiro grupo faz referência a variável medida e pode
+04:23 ter uma ou 2 letras. Já o segundo grupo corresponde
+04:26 às funcionalidades adicionais do instrumento e pode conter até 3
+04:31 letras. Analisando a tabela anterior, significado das letras para a
+04:35 construção de uma tag, você pode observar que uma mesma
+04:39 letra pode apresentar significados diferentes conforme a posição em que
+04:44 está disposta na construção da tag. Nesse detalhe da tabela
+04:48 anterior
+04:49 reproduzida a seguir, temos a letra A do primeiro grupo,
+04:53 significa analisador, e no segundo grupo significa alarme. Na tabela
+04:58 que aparece para vocês, é possível ver instrumentos e a
+05:03 sua definição. Esses são os instrumentos que já vimos no
+05:07 módulo 1, então o nosso sensor detector vai ser sempre
+05:11 representado pela letra E, o transmissor vai ser a letra
+05:15 T, o indicador, a letra I, o registrador, a letra
+05:19 R,
+05:19 O conversor, a letra Y, o controlador, sempre representado pela
+05:24 letra C, e o elemento final de controle as nossas
+05:28 válvulas, a letra V.
+05:31 Identificação da malha.
+05:33 A parte numérica de composição da tag identifica a malha
+05:37 onde o instrumento está instalado. Na sequência numérica adotada na
+05:42 elaboração da tag, é uma atribuição interna da empresa.
+05:46 Todos os instrumentos de uma mesma malha devem apresentar o
+05:50 mesmo número sequencial. Veja na imagem.
+05:53 Como podemos identificar diversos instrumentos em uma malha de controle,
+05:59 colocando em prática PIC 301, controlador e indicador de pressão
+06:04 da malha 301. PE, elemento primário sensor de temperatura da
+06:09 malha 20.
+06:11 PIC 212, controlador indicador de pressão da malha 212. TCV
+06:15 38, é uma válvula controladora ou de controle de temperatura
+06:20 da malha 38. A tag dos instrumentos pode conter um
+06:24 segundo grupo numérico. Qual identifica a área onde o instrumento
+06:29 está instalado. Em algumas empresas, a identificação da área é
+06:33 disposta antes da identificação funcional e em outras, pode estar
+06:38 após o grupo de letras. Como elaborar uma tag.
+06:42 Na figura seguinte, mostra como pode ser construído uma tag.
+06:46 Nesse exemplo, o primeiro grupo é numérico, e identifica a
+06:50 área onde o instrumento está instalado. A seguir, aparece a
+06:54 identificação funcional do instrumento composto pelos 2 grupos de letras.
+06:59 Depois, apresenta a identificação da malha, composta pelo segundo grupo
+07:04 numérico. O exemplo mostrado também apresenta um componente extra, denominado
+07:09 de sufixo. Este item opcional é um caractere de letra
+07:12 que é acrescentado na tag quando a malha
+07:15 possui mais de um instrumento com a mesma identificação. Agora
+07:20 temos na figura um exemplo de tag alfanumérica de um
+07:23 instrumento indicador e controlador da variável de temperatura. Conforme a
+07:29 organização da parte numérica, esse instrumento seria da malha de
+07:33 controle 276 e estaria instalado dentro da área 15 de
+07:37 processo da unidade industrial. Vamos a outros exemplos de tags.
+07:42 Vamos conhecer outros exemplos de tag para diferentes tipos de
+07:46 instrumentos industriais.
+07:48 E as respectivas formas para se ler essas tag, veremos
+07:52 exemplos de um instrumento indicador elemento final de controle, instrumento
+07:58 cego, transmissor, elemento sensor indicador local. Exemplo de tag de
+08:03 um instrumento indicador. A forma de ler essa tag é
+08:07 "indicador de vazão da malha 504 da unidade 41". Agora,
+08:11 um exemplo de tag de um elemento final de controle.
+08:15 Como devemos fazer a leitura dessa tag?
+08:18 "Válvula B de controle de pressão da malha 16 da
+08:23 unidade 12". Exemplo de tag de um instrumento cego. Forma
+08:29 para a leitura da tag: "chave de nível alto da
+08:34 malha 102 da unidade 100".
+08:37 Exemplo de tag de um instrumento transmissor. A forma de
+08:42 ler essa tag é "transmissor de temperatura da malha 1
+08:47 da unidade 50".
+08:49 Exemplo de tag de um instrumento sensor. A forma de
+08:54 ler essa tag é "sensor de pressão da malha 8
+08:58 da unidade 25". Exemplo de tag de um indicador local.
+09:03 A forma de ler essa tag é "visor de nível
+09:07 da malha 115 da unidade 30". A importância do uso
+09:12 da tag.
+09:13 Aprendemos como são elaboradas as tags dos instrumentos de medição
+09:18 e controle dos processos. A importância do seu uso no
+09:21 âmbito industrial está desde a elaboração do projeto na emissão
+09:26 da compra, no recebimento e até a execução de sua
+09:29 montagem na instalação industrial. Isso porque, durante todo esse processo,
+09:34 cada instrumento é sempre identificado pela sua tag, como ilustra
+09:39 a próxima imagem. Durante a operação de produção, nas solicitações
+09:43 de manutenção,
+09:44 e em todas as vezes em que há necessidade de
+09:47 alguma informação ou intervenção nos instrumentos instalados no processo. Os
+09:52 técnicos sempre fazem uso das tags para a correta identificação
+09:56 do instrumento referenciado. As tag facilitam muito a identificação da
+10:01 função executada pelo instrumento no processo. A área em que
+10:05 está instalada e qual a malha de controle eles pertencem.
+10:08 Nessa vídeo aula, aprendemos porque as tag são tão importantes
+10:13 para a correta identificação dos instrumentos
+10:16 dentro das instalações industriais e como são elaboradas, como o
+10:20 código alfanumérico. As tags utilizam o trabalho de área dos
+10:24 técnicos, pois permitem uma rápida identificação dos instrumentos nos ambientes
+10:29 industriais e facilitam o entendimento dos diálogos que ocorrem entre
+10:34 os técnicos das indústrias de processo contínuo,
+10:38 quando estes precisam coletar informações do seu processo ou executar
+10:43 algum tipo de intervenção em um instrumento ao desempenhar a
+10:47 sua função de técnico industrial, seja na interpretação de uma
+10:51 ordem de serviço, seja no preenchimento do histórico de manutenção.
+10:55 É importante que você saiba reconhecer os instrumentos fazendo uso
+10:60 correto das tags. Para a nossa próxima aula, iremos continuar
+11:04 decifrando os símbolos utilizados na instrumentação industrial,
+11:08 com um olhar voltado para o tipo de instrumento, a
+11:12 sua localização e a sua montagem do processo industrial. Você
+11:16 não pode perder essa próxima aula. Te espero lá!

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><title>Teste YT Caption</title></head>
+<body>
+<div id="player"></div>
+<div id="saida" style="font-family:monospace;padding:12px;background:#111;color:#0f0;white-space:pre-wrap"></div>
+<script>
+function log(m){ document.getElementById('saida').textContent += m + "\n"; }
+
+var tag = document.createElement('script');
+tag.src = "https://www.youtube.com/iframe_api";
+document.body.appendChild(tag);
+
+var player;
+function onYouTubeIframeAPIReady() {
+  log("API pronta. Criando player...");
+  player = new YT.Player('player', {
+    height: '390', width: '640',
+    videoId: 'cxmpgAbFl98',
+    playerVars: { 'playsinline':1, 'cc_load_policy':1, 'cc_lang_pref':'pt', 'hl':'pt' },
+    events: { 'onReady': onReady, 'onStateChange': onState, 'onApiChange': onApi }
+  });
+}
+function onReady(e){
+  log("Player pronto. Duração: " + e.target.getDuration());
+  e.target.playVideo();
+}
+function onApi(e){
+  // módulo captions disponível?
+  try {
+    var mods = player.getOptions();
+    log("Módulos: " + JSON.stringify(mods));
+    if (mods && mods.indexOf('captions') > -1){
+      log("Opções captions: " + JSON.stringify(player.getOptions('captions')));
+      player.loadModule('captions');
+      player.setOption('captions','track',{'languageCode':'pt'});
+    }
+  } catch(err){ log("onApi erro: " + err.message); }
+}
+function onState(e){
+  log("Estado: " + e.data);
+}
+
+// A CADA 2s: tenta LER a div de legenda do DOM (o teste crítico)
+setInterval(function(){
+  // 1) tenta achar o iframe e acessar seu documento interno (cross-origin?)
+  var ifr = document.querySelector('#player iframe, iframe');
+  var res = "[" + new Date().toLocaleTimeString() + "] ";
+  try {
+    var doc = ifr && (ifr.contentDocument || (ifr.contentWindow && ifr.contentWindow.document));
+    if (!doc) { res += "contentDocument=NULL (cross-origin bloqueado)"; }
+    else {
+      var seg = doc.querySelector('.ytp-caption-segment');
+      res += "ACESSO OK! legenda=" + (seg ? '"'+seg.textContent+'"' : '(sem legenda no momento)');
+    }
+  } catch(err){
+    res += "BLOQUEADO cross-origin: " + err.message;
+  }
+  // 2) tenta achar a div direto no documento principal (caso não seja iframe)
+  var segMain = document.querySelector('.ytp-caption-segment');
+  res += " | no doc principal: " + (segMain ? '"'+segMain.textContent+'"' : 'não existe');
+  log(res);
+}, 2000);
+</script>
+</body></html>

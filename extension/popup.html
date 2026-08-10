@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<style>
+  body{width:280px;font-family:system-ui,Segoe UI,sans-serif;margin:0;padding:16px;
+       background:#0f1420;color:#e8ecf4}
+  h1{font-size:15px;margin:0 0 4px}
+  .sub{font-size:11px;color:#9aa6bd;margin:0 0 16px}
+  .row{display:flex;align-items:center;justify-content:space-between;margin:12px 0}
+  label{font-size:13px}
+  select{padding:6px 8px;border-radius:8px;border:1px solid #26304a;background:#0b111d;color:#e8ecf4}
+  .switch{position:relative;width:44px;height:24px}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:#26304a;border-radius:24px;cursor:pointer;transition:.2s}
+  .slider:before{content:"";position:absolute;height:18px;width:18px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+  input:checked + .slider{background:#2f80ed}
+  input:checked + .slider:before{transform:translateX(20px)}
+  .hint{font-size:11px;color:#9aa6bd;margin-top:14px;line-height:1.4}
+</style>
+</head>
+<body>
+  <h1>🤟 Leitor VLibras</h1>
+  <p class="sub">Tradução automática de legendas para Libras</p>
+
+  <div class="row">
+    <label>Tradução ativa</label>
+    <span class="switch"><input type="checkbox" id="ativo" checked><span class="slider"></span></span>
+  </div>
+
+  <div class="row">
+    <label>Velocidade do avatar</label>
+    <select id="velocidade">
+      <option value="1x">1x (normal)</option>
+      <option value="1.5x">1.5x</option>
+      <option value="2x">2x</option>
+      <option value="2.5x" selected>2.5x (máx)</option>
+      <option value="0.5x">0.5x (lento)</option>
+    </select>
+  </div>
+
+  <p class="hint">
+    Abra um vídeo no <b>YouTube</b> ou <b>Vimeo</b> com legendas ligadas.
+    O avatar aparece no canto e traduz automaticamente.
+    Recarregue a aba após alterar as configurações.
+  </p>
+  <script src="popup.js"></script>
+</body>
+</html>

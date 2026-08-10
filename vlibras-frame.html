@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VLibras Frame</title>
+
+<!-- Vimeo NÃO é necessário aqui — esta página só roda o VLibras -->
+<script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
+
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; }
+  /* área de diagnóstico opcional (oculta por padrão; ?debug=1 para mostrar) */
+  #diag {
+    position: fixed; left: 4px; top: 4px; z-index: 1;
+    font: 11px ui-monospace, Menlo, Consolas, monospace;
+    color: #7fb1f0; background: rgba(0,0,0,.4); padding: 4px 6px; border-radius: 6px;
+    max-width: 90%; white-space: pre-wrap; display: none;
+  }
+</style>
+</head>
+<body>
+  <div id="diag"></div>
+
+  <!-- markup oficial do widget VLibras -->
+  <div vw class="enabled">
+    <div vw-access-button class="active"></div>
+    <div vw-plugin-wrapper>
+      <div class="vw-plugin-top-wrapper"></div>
+    </div>
+  </div>
+
+<script>
+/* =========================================================
+   vlibras-frame.html — roda o VLibras numa página hospedada
+   (GitHub Pages). Recebe legendas do "pai" (extensão / app)
+   via window.postMessage e traduz automaticamente.
+
+   Protocolo de mensagens (postMessage):
+     { __leitorVlibras: true, tipo: 'legenda', texto: '...' }
+     { __leitorVlibras: true, tipo: 'config', config: { velocidade, intervaloMax, ativo } }
+   Emite para o pai:
+     { __leitorVlibras: true, tipo: 'pronto' }        // avatar carregado
+   ========================================================= */
+(function () {
+  'use strict';
+
+  const debug = new URLSearchParams(location.search).get('debug') === '1';
+  const diagEl = document.getElementById('diag');
+  if (debug) diagEl.style.display = 'block';
+  function log(m) { if (debug) { diagEl.textContent += m + '\n'; } console.log('[VLibras/frame]', m); }
+
+  let config = { velocidade: '2.5x', intervaloMax: 4000, ativo: true };
+
+  /* ---- inicializa o widget ---- */
+  (function initVLibras(n) {
+    n = n || 0;
+    try {
+      if (window.VLibras && window.VLibras.Widget) {
+        new window.VLibras.Widget('https://vlibras.gov.br/app');
+        log('widget inicializado');
+        ligarSincronia(0); autoAbrir(0); aplicarVelocidadeQuandoPronto(0);
+      } else if (n < 40) {
+        setTimeout(function () { initVLibras(n + 1); }, 300);
+      } else {
+        log('VLibras.Widget indisponivel');
+      }
+    } catch (e) { log('init erro: ' + e.message); }
+  })(0);
+
+  /* ---- instância viva do plugin ---- */
+  function getPlugin() {
+    if (window.plugin && window.plugin.player && typeof window.plugin.translate === 'function') return window.plugin;
+    for (const k in window) { try { const v = window[k];
+      if (v && typeof v === 'object' && v.player && typeof v.translate === 'function' && v.player.loaded !== undefined) return v;
+    } catch (e) {} }
+    return null;
+  }
+
+  /* ---- fila sincronizada por gloss:end ---- */
+  let pendente = null, enviando = false, ultimo = '', timer = null, prontoAvisado = false;
+  function traduzir(t) {
+    t = (t || '').replace(/[\r\n]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return false;
+    const p = getPlugin(); if (!p) return false;
+    try { p.translate(t); return true; } catch (e) { return false; }
+  }
+  function processar() {
+    if (enviando || !pendente) return;
+    const t = pendente; pendente = null; enviando = true;
+    if (traduzir(t)) { ultimo = t; log('traduzindo: ' + t.slice(0, 40)); }
+    clearTimeout(timer);
+    timer = setTimeout(function () { enviando = false; processar(); }, config.intervaloMax);
+  }
+  function liberar() { clearTimeout(timer); enviando = false; processar(); }
+
+  function ligarSincronia(n) {
+    n = n || 0;
+    const p = getPlugin();
+    if (p && p.player && typeof p.player.on === 'function') {
+      p.player.on('gloss:end', liberar);
+      log('gloss:end ativo');
+      if (!prontoAvisado) { prontoAvisado = true; avisarPronto(); }
+    } else if (n < 120) setTimeout(function () { ligarSincronia(n + 1); }, 500);
+  }
+
+  /* ---- velocidade ---- */
+  const ORDEM = ['0.5x', '1x', '1.5x', '2x', '2.5x'];
+  function aplicarVelocidade(alvo) {
+    const btn = document.querySelector('.vpw-button-speed'); if (!btn) return false;
+    let g = 0; while ((btn.textContent || '').trim() !== alvo && g < ORDEM.length + 1) { btn.click(); g++; }
+    return (btn.textContent || '').trim() === alvo;
+  }
+  function aplicarVelocidadeQuandoPronto(n) {
+    n = n || 0;
+    if (aplicarVelocidade(config.velocidade)) { log('velocidade ' + config.velocidade); return; }
+    if (n < 60) setTimeout(function () { aplicarVelocidadeQuandoPronto(n + 1); }, 500);
+  }
+
+  /* ---- auto-abrir painel ---- */
+  function autoAbrir(n) {
+    n = n || 0;
+    if (document.querySelector('.vpw-container,[class*="vpw"]') || window.plugin) return;
+    const b = document.querySelector('[vw-access-button]'); if (b) { try { b.click(); } catch (e) {} }
+    if (n < 60) setTimeout(function () { autoAbrir(n + 1); }, 300);
+  }
+
+  /* ---- comunicação com o pai (postMessage) ---- */
+  function avisarPronto() {
+    try { parent.postMessage({ __leitorVlibras: true, tipo: 'pronto' }, '*'); } catch (e) {}
+    log('avisei pai: pronto');
+  }
+  window.addEventListener('message', function (ev) {
+    const d = ev.data;
+    if (!d || d.__leitorVlibras !== true) return;
+    if (d.tipo === 'legenda') {
+      if (config.ativo && d.texto && d.texto !== ultimo) { pendente = d.texto; processar(); }
+    } else if (d.tipo === 'config') {
+      config = Object.assign(config, d.config || {});
+      if (d.config && d.config.velocidade) aplicarVelocidade(d.config.velocidade);
+      log('config atualizada');
+    }
+  });
+
+  log('frame carregado');
+})();
+</script>
+</body>
+</html>

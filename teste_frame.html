@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teste — VLibras em iframe via postMessage</title>
+<style>
+  :root { --bg:#0f1420; --card:#1a2130; --ink:#e8eef7; --mut:#8fa3bf; --acc:#3d7bf0; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+         background: var(--bg); color: var(--ink); display:flex; min-height:100vh; }
+  .painel { width: 420px; padding: 24px; border-right: 1px solid #263048; }
+  h1 { font-size: 18px; margin: 0 0 4px; }
+  .sub { color: var(--mut); font-size: 13px; margin-bottom: 20px; }
+  label { display:block; font-size:12px; color:var(--mut); margin: 14px 0 4px; }
+  textarea, input, select { width:100%; background: var(--card); border:1px solid #2b3750;
+         color: var(--ink); border-radius:8px; padding:10px; font-size:14px; }
+  textarea { min-height: 70px; resize: vertical; }
+  button { margin-top:14px; width:100%; background: var(--acc); color:#fff; border:0;
+         border-radius:8px; padding:12px; font-size:14px; font-weight:600; cursor:pointer; }
+  button.sec { background:#2b3750; }
+  .row { display:flex; gap:8px; }
+  .row > * { flex:1; }
+  .status { margin-top:16px; padding:10px; border-radius:8px; background:var(--card);
+         font: 12px ui-monospace, Consolas, monospace; color:#7fd18c; min-height:18px;
+         white-space: pre-wrap; max-height: 180px; overflow:auto; }
+  .frase { background:#22304a; border:1px solid #2b3750; border-radius:6px; padding:8px;
+         margin:6px 0; font-size:13px; cursor:pointer; }
+  .frase:hover { border-color: var(--acc); }
+  .palco { flex:1; position:relative; background:
+         repeating-linear-gradient(45deg,#141a28,#141a28 12px,#161d2c 12px,#161d2c 24px); }
+  iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+</style>
+</head>
+<body>
+  <div class="painel">
+    <h1>🤟 Teste do VLibras em iframe</h1>
+    <div class="sub">Simula o que a extensão fará: enviar legendas ao iframe via <code>postMessage</code>.</div>
+
+    <label>URL do frame (local ou GitHub Pages)</label>
+    <input id="url" value="vlibras-frame.html?debug=1">
+    <button class="sec" onclick="carregar()">Recarregar iframe</button>
+
+    <label>Velocidade do avatar</label>
+    <select id="vel">
+      <option>0.5x</option><option>1x</option><option>1.5x</option>
+      <option>2x</option><option selected>2.5x</option>
+    </select>
+
+    <label>Legenda para traduzir</label>
+    <textarea id="txt">Olá, tudo bem? Bem-vindo à aula de hoje.</textarea>
+    <button onclick="enviar()">Enviar legenda ▶</button>
+
+    <label>Frases rápidas (clique para enviar)</label>
+    <div class="frase" onclick="quick(this)">Bom dia turma</div>
+    <div class="frase" onclick="quick(this)">Hoje vamos aprender sobre instrumentação</div>
+    <div class="frase" onclick="quick(this)">Obrigado e até a próxima aula</div>
+
+    <div class="status" id="status">aguardando…</div>
+  </div>
+
+  <div class="palco">
+    <iframe id="frame" src="vlibras-frame.html?debug=1" allow="autoplay"></iframe>
+  </div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const statusEl = $('#status');
+  function log(m){ statusEl.textContent = '['+new Date().toLocaleTimeString()+'] '+m+'\n'+statusEl.textContent; }
+
+  function frameWin(){ return $('#frame').contentWindow; }
+  function post(msg){ try { frameWin().postMessage(Object.assign({__leitorVlibras:true}, msg), '*'); } catch(e){ log('erro post: '+e.message); } }
+
+  function carregar(){ $('#frame').src = $('#url').value; log('recarregando iframe…'); }
+  function enviar(){ const t=$('#txt').value.trim(); if(!t) return; post({tipo:'legenda', texto:t}); log('→ legenda: '+t.slice(0,50)); }
+  function quick(el){ post({tipo:'legenda', texto: el.textContent}); log('→ '+el.textContent); }
+
+  $('#vel').addEventListener('change', e => { post({tipo:'config', config:{velocidade:e.target.value}}); log('→ velocidade '+e.target.value); });
+
+  // recebe avisos do frame
+  window.addEventListener('message', ev => {
+    const d = ev.data; if(!d || d.__leitorVlibras!==true) return;
+    if(d.tipo==='pronto'){ log('✅ frame avisou: VLibras PRONTO'); post({tipo:'config', config:{velocidade:$('#vel').value}}); }
+  });
+
+  log('página de teste carregada');
+</script>
+</body>
+</html>

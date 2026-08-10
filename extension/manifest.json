@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Leitor VLibras — Tradução de vídeos em Libras",
+  "version": "1.0.0",
+  "description": "Traduz automaticamente as legendas de vídeos do YouTube e Vimeo para Libras usando o avatar oficial do VLibras.",
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": [
+    "https://www.youtube.com/*", "https://youtube.com/*",
+    "https://vimeo.com/*", "https://player.vimeo.com/*",
+    "https://vlibras.gov.br/*", "https://*.vlibras.gov.br/*"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'; connect-src 'self' https://vlibras.gov.br https://*.vlibras.gov.br; img-src 'self' data: https://vlibras.gov.br https://*.vlibras.gov.br; style-src 'self' 'unsafe-inline' https://vlibras.gov.br https://*.vlibras.gov.br; font-src 'self' https://vlibras.gov.br https://*.vlibras.gov.br; media-src 'self' https://vlibras.gov.br https://*.vlibras.gov.br"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://youtube.com/*"],
+      "js": ["content-youtube.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://vimeo.com/*", "https://player.vimeo.com/*"],
+      "js": ["content-vimeo.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["vlibras-frame.html", "vlibras-frame.js", "vlibras-plugin.js"],
+      "matches": ["https://www.youtube.com/*", "https://youtube.com/*", "https://vimeo.com/*", "https://player.vimeo.com/*"]
+    }
+  ],
+  "action": { "default_popup": "popup.html", "default_title": "Leitor VLibras" },
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+}

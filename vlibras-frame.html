@@ -41,6 +41,7 @@
      { __leitorVlibras: true, tipo: 'config', config: { velocidade, intervaloMax, ativo } }
    Emite para o pai:
      { __leitorVlibras: true, tipo: 'pronto' }        // avatar carregado
+     { __leitorVlibras: true, tipo: 'gloss:end' }     // avatar terminou de sinalizar
    ========================================================= */
 (function () {
   'use strict';
@@ -92,7 +93,12 @@
     clearTimeout(timer);
     timer = setTimeout(function () { enviando = false; processar(); }, config.intervaloMax);
   }
-  function liberar() { clearTimeout(timer); enviando = false; processar(); }
+  function liberar() {
+    clearTimeout(timer); enviando = false;
+    // avisa o PAI (inject) que o avatar terminou → libera a próxima legenda
+    try { parent.postMessage({ __leitorVlibras: true, tipo: 'gloss:end' }, '*'); } catch (e) {}
+    processar();
+  }
 
   function ligarSincronia(n) {
     n = n || 0;

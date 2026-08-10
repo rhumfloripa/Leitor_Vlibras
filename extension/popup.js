@@ -1,17 +1,8 @@
-/* Popup — salva config no chrome.storage e avisa a aba ativa */
-const ativoEl = document.getElementById('ativo');
-const velEl = document.getElementById('velocidade');
-
-// carrega config salva
-chrome.storage.local.get(['ativo', 'velocidade'], (cfg) => {
-  if (cfg.ativo !== undefined) ativoEl.checked = cfg.ativo;
-  if (cfg.velocidade) velEl.value = cfg.velocidade;
+/* popup.js — salva config no chrome.storage (o storage-bridge repassa ao inject) */
+const $ = s => document.querySelector(s);
+chrome.storage.local.get(['ativo', 'velocidade'], c => {
+  $('#ativo').checked = c.ativo !== undefined ? c.ativo : true;
+  if (c.velocidade) $('#velocidade').value = c.velocidade;
 });
-
-function salvar() {
-  const cfg = { ativo: ativoEl.checked, velocidade: velEl.value };
-  chrome.storage.local.set(cfg);
-}
-
-ativoEl.addEventListener('change', salvar);
-velEl.addEventListener('change', salvar);
+$('#ativo').addEventListener('change', e => chrome.storage.local.set({ ativo: e.target.checked }));
+$('#velocidade').addEventListener('change', e => chrome.storage.local.set({ velocidade: e.target.value }));

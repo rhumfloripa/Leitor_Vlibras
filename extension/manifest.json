@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Leitor VLibras — Tradução de vídeos em Libras",
-  "version": "2.0.0",
-  "description": "Traduz automaticamente as legendas do YouTube para Libras usando o avatar oficial do VLibras.",
+  "version": "2.1.0",
+  "description": "Traduz automaticamente as legendas do YouTube, Vimeo e Google Meet para Libras usando o avatar oficial do VLibras.",
   "permissions": ["storage", "activeTab"],
-  "host_permissions": ["*://www.youtube.com/*", "*://m.youtube.com/*"],
+  "host_permissions": ["*://www.youtube.com/*", "*://m.youtube.com/*", "*://player.vimeo.com/*", "*://vimeo.com/*", "*://www.vimeo.com/*", "*://meet.google.com/*"],
   "content_scripts": [
     {
       "matches": ["*://www.youtube.com/*", "*://m.youtube.com/*"],
@@ -14,10 +14,31 @@
       "all_frames": false
     },
     {
+      "matches": ["*://player.vimeo.com/*", "*://vimeo.com/*", "*://www.vimeo.com/*"],
+      "js": ["storage-bridge.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED",
+      "all_frames": true
+    },
+    {
       "matches": ["*://www.youtube.com/*", "*://m.youtube.com/*"],
       "js": ["inject.js"],
       "run_at": "document_idle",
       "world": "MAIN",
+      "all_frames": false
+    },
+    {
+      "matches": ["*://player.vimeo.com/*", "*://vimeo.com/*", "*://www.vimeo.com/*"],
+      "js": ["inject-vimeo.js"],
+      "run_at": "document_idle",
+      "world": "ISOLATED",
+      "all_frames": true
+    },
+    {
+      "matches": ["*://meet.google.com/*"],
+      "js": ["inject-meet.js"],
+      "run_at": "document_idle",
+      "world": "ISOLATED",
       "all_frames": false
     }
   ],
